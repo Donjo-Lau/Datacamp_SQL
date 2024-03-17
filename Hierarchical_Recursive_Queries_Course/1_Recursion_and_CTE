@@ -1,0 +1,112 @@
+-- Define a CTE for an IT organization (select managers using a CTE): 
+
+
+-- 1. pull data of all people that are managers
+WITH JOBS (id, Name, JobTitle) AS  
+(
+SELECT 
+  ID, 
+  Name, 
+  Position
+FROM employee
+WHERE Position like '%Manager%'
+),
+
+--2. pull data of all people whose salary > $10,000
+SALARIES(id, salary) AS 
+(
+SELECT 
+  ID, 
+  Salary
+FROM ITSalary
+WHERE Salary > 10000
+)
+
+SELECT 
+JOBS.Name, JOBS.Position, SALARIES.Salary
+FROM JOBS
+INNER JOIN SALARIES
+ON JOBS.ID = SALARIES.ID;
+
+
+--Exercise 1: 
+-- Create a CTE called ITjobs where we want to find any positions that start with IT and their name starts with an A 
+-- and whose salary is >$3000
+
+WITH ITjobs (Id, Name, Position) AS (
+SELECT 
+ID, 
+Name, 
+Position
+FROM employee
+WHERE Position LIKE 'IT%' and Name LIKE 'A%'
+), 
+
+ITsalary (Id, Salary) AS (
+SELECT 
+ID, 
+Salary
+FROM Salary
+WHERE Salary > 3000)
+
+Select
+ITjobs.Name, 
+ITjobs.Position, 
+ITsalary.Salary
+FROM ITjobs
+INNER JOIN Salary
+ON ITjobs.Id = Salary.Id;
+
+-- Recursion: 
+-- Advantages: 
+  -- solve problems that involve recursion (i.e. finding the past 5 generations of parents in your lineage)
+  -- recursion should be limited by a termination condition
+
+-- Disadvantages: 
+  -- slow execution time
+
+--Example: Finding the sum of consecutive numbers using CTEs
+
+With calculate_SumOfNumber AS (
+SELECT 
+  1 as iteration, 
+  1 as SumofNumber
+  UNION ALL
+
+-- Recursive Part
+Select iteration + 1, SUMofNumber + (iteration + 1)
+FROM calculate_SumofNumber
+WHERE iteration < 6
+)
+
+Select SumofNumber
+FROM calculate_SumofNumber;
+)
+
+-- Use DECLARE @local_variabe to define variables in a SQL server
+
+-- Exercise 2: Calculate a factorial of 5: Iteratively
+
+DECLARE @target float = 5 -- define the factorial number
+DECLARE @factorial float = 1 -- initial this variable to a specific value
+
+WHILE @target > 0: 
+BEGIN
+  SET @factorial = @factorial * @target
+  SET @target = @target - 1
+END
+
+SELECT @factorial;
+ -- 1. here we start with factorial = 1 and target = 5 -> 1*5 = 5
+ -- 2. then factorial = 5 and target = 4 -> 5*4 = 20
+ -- 3. factorial = 20 and target = 3 -> (20) * 3 = (5*4) * 3 = 60
+ -- etc.
+
+-- Exercise 2b: Calculate a factorial of 5: Recursively:
+
+
+
+
+
+
+
