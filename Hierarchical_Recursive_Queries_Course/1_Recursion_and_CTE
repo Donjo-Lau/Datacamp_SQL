@@ -1,5 +1,7 @@
--- Define a CTE for an IT organization (select managers using a CTE): 
+-- Good video for to learn about recursion SQL: 
+-- https://www.youtube.com/watch?v=7hZYh9qXxe4&t=687s
 
+-- Define a CTE for an IT organization (select managers using a CTE): 
 
 -- 1. pull data of all people that are managers
 WITH JOBS (id, Name, JobTitle) AS  
@@ -102,9 +104,124 @@ SELECT @factorial;
  -- 3. factorial = 20 and target = 3 -> (20) * 3 = (5*4) * 3 = 60
  -- etc.
 
--- Exercise 2b: Calculate a factorial of 5: Recursively:
+-- Exercise 2b: Calculate a factorial of 6: Recursively:
+With calculate_factorial AS (
+SELECT 
+  1 as step, 
+  1 as factorial
+UNION ALL 
+SELECT
+  step + 1, 
+  factorial * (step+1)
+FROM calculate_factorial
+WHERE step < 6
+)
+
+select factorial 
+from calculate_factorial;
+)
+
+-- Exercise: Write a cursive SQL statement to count numbers from 1-50: 
+  -- here the where clause states that the last step will be step 49 where number = 49+1 which would output the last number as 50. 
+
+WITH counting_numbers as (
+select 
+1 as number
+UNION ALL
+select 
+number = number + 1
+FROM counting_numbers
+WHERE number <= 49 
+)
+select number
+from counting_numbers
+
+-- Tip: for a recursion that requires more than 100 steps, increase the number of recursion steps to up to you 32,767 times: OPTION(MAXRECURSION 32767)
+
+-- Tip: The following SQL statements are NOT allowed: Group by, having, left join, right join, outer join, select distinct, subqueries, TOP
+
+-- Number of columns for anchor and recursive members are the same
+-- the data types of anchor and recursive members are the same
+
+-- Exercise: Create the alphabet recursively: you can use char(number) to convert a number to its corresponding number. char(65) = A
+
+WITH alphabet as (
+select
+  number_of_letter = 65
+UNION ALL
+
+SELECT
+  number_of_letter+1
+FROM alphabet
+WHERE number_of_letter < 65+25
+)
+
+SELECT char(number_of_letter)
+FROM alphabet
+
+-- Exercise: Create a recursive time series to get every single day for 365 days from today's date
+
+WITH time_series AS (
+SELECT 
+  GETDATE() as time
+UNION ALL 
+SELECT 
+  time= DATEADD(day, 1, time)
+FROM time_series
+WHERE time <= GETDATE() + 364
+)
+select time
+from time_series
+OPTION(MAXRECURSION 365) -- set max recursion to 365 to increase the limit
+
+-- Recursive Hierarchical example from youtube 
+  -- not a fan of the datacamp module for this one
 
 
+--Exercise: Find all the employees under Asha: 
+  --1. here we select our initial row of Asha
+  --2. we want to find all the IDs that are under Asha and we will do that by comparing Asha's ID to the manager_id column in the original table
+  --3. so the recursive part is showing that we for Asha'a id the recursive id, we will find the managaer_id associated with that in the original column and return the worker_id for employees.
+
+WITH recursive emp_hierarchy as 
+(
+SELECT 
+  ID, name, manager_id, designation, 1 as level
+from emp_details where name = 'Asha'
+UNION
+SELECT 
+  E.Id, E.name
+FROM emp_hierarchy as recursive_CTE
+INNER JOIN emp_details as original_table
+ON recursive_CTE.id = emp_details.manager_id
+)
+
+select * from emp_hierarchy
+
+-- Exercise: Find the hierarchy of managers for a given employee "David" (over David). opposite of the earlier exercise
+
+WITH recursive emp_hierarchy as (
+SELECT id, name, manager_id, designation, 1 as lvl
+  FROM EMP_Details
+  WHERE name = 'David'
+UNION
+SELECT E.id, E.name, E.manager_id, E.designation, H.lvl + 1 as lvl
+FROM emp_hierarchy as H
+JOIN emp_details E on H.manager_id = E.id
+)
+
+select 
+emp_hierarchy.id, 
+emp_hierarchy.name as Employee_name,
+emp_details.name as Managers_name, -- this is from the details table
+emp_hiearchy.lvl as level
+from emp_hierarchy 
+LEFT JOIN emp_details as e
+ON emp_hierarchy.manager_id = emp_details.id
+
+
+
+-- Here instead of adding the manager's name in the anchor part which doesn't exist we can return manager's name at the end since it's just looking matching the id from the original table
 
 
 
