@@ -210,6 +210,7 @@ FROM emp_hierarchy as H
 JOIN emp_details E on H.manager_id = E.id
 )
 
+-- Here instead of adding the manager's name in the anchor part which doesn't exist we can return manager's name at the end since it's just looking matching the id from the original table
 select 
 emp_hierarchy.id, 
 emp_hierarchy.name as Employee_name,
@@ -220,9 +221,112 @@ LEFT JOIN emp_details as e
 ON emp_hierarchy.manager_id = emp_details.id
 
 
+-- Creating, Inserting, Updating, Deleting, and dropping a table: 
 
--- Here instead of adding the manager's name in the anchor part which doesn't exist we can return manager's name at the end since it's just looking matching the id from the original table
+-- Exercise: create a table with columns that can't be blank 
+CREATE TABLE person (
+IndividualID INT NOT NULL, 
+FirstName VARCHAR(255) NOT NULL,
+LastName VARCHAR(255) NOT NULL, 
+Address VARCHAR(255) NOT NULL, 
+City CHAR(32) NOT NULL, 
+Birthday DATE NOT NULL
+);
 
+select *
+from 
+person
+
+-- How to Insert and update a table for employee
+
+-- Inserting a single row of data
+INSERT INTO Events (EventName, EventDate, EventLocation)
+VALUES ('Birthday Party', '2024-04-15', 'City Park');
+
+-- Inserting multiple rows of data
+INSERT INTO Events (EventName, EventDate, EventLocation)
+VALUES 
+    ('Graduation Ceremony', '2024-05-25', 'University Auditorium'),
+    ('Music Concert', '2024-06-10', 'Outdoor Arena');
+
+--- Updating Data (UPDATE statement):
+-- Update the EventLocation for a specific event where event Name = 'Music Concert'
+UPDATE Events
+SET EventLocation = 'Indoor Arena'
+WHERE EventName = 'Music Concert';
+
+-- Update multiple columns for a specific event
+UPDATE Events
+SET EventDate = '2024-06-12', EventLocation = 'Convention Center'
+WHERE EventName = 'Graduation Ceremony';
+
+--  we're updating both the EventDate and EventLocation for the event with the name 'Graduation Ceremony'.
+
+--- Update multiple columns where EventId = 1:
+UPDATE Events
+SET EventDate = '2024-06-01', EventLocation = 'New Location'
+WHERE EventID = 1;
+
+-- Delete rows from table: 
+DELETE from Employee
+WHERE lineid = 1; 
+
+-- Drop the entire Employee table: 
+DROP TABLE Employee
+
+-- Changing a table structure: (Add or Delete columns from a table)
+
+--- To ADD a new column called 'Phone Number' to a table: 
+ALTER TABLE Employee
+ADD COLUMN Phone_Number VARCHAR(255) NOT NULL; 
+
+--- To DELETE a new column called 'Email' from a table: 
+ALTER Table Employee
+DROP COLUMN Email; 
+
+-- Create Relations: 
+  -- Primary Key: The properties of a primary key are that each row is unique. Each row has a primary key
+  -- Foreign Key: primary key of another table
+
+-- Define Primary Key for a table: 
+for table: Person_Data: ID INT NOT NULL PRIMARY KEY,
+
+-- Define Foreign Key for table Orders
+Orders PersonID INT FOREIGN KEY REFERENCE Person_Data(ID)
+
+Primary Key:
+A primary key is a column or set of columns in a table that uniquely identifies each row in the table. 
+The primary key constraint ensures that the values in the primary key column(s) are unique and not null.
+By default, primary key columns are indexed, which helps in faster data retrieval.
+Here's an example of defining a primary key in SQL:
+
+CREATE TABLE Students (
+    StudentID INT PRIMARY KEY,
+    FirstName VARCHAR(50),
+    LastName VARCHAR(50),
+    Age INT
+);
+In this example, StudentID is the primary key column of the Students table, ensuring that each student record is uniquely identified by their ID.
+
+Foreign Key:
+A foreign key is a column or set of columns in a child table that refers to the primary key or a unique key in a parent table. It establishes a relationship between two tables based on the values of these columns.
+The foreign key constraint ensures referential integrity, meaning that values in the foreign key column(s) must match values in the corresponding primary key or unique key column(s) in the parent table, or they must be null.
+In SQL, foreign keys are typically created using the FOREIGN KEY constraint.
+Here's an example of defining a foreign key in SQL:
+
+CREATE TABLE Courses (
+    CourseID INT PRIMARY KEY,
+    CourseName VARCHAR(100),
+    InstructorID INT,
+    FOREIGN KEY (InstructorID) REFERENCES Instructors(InstructorID)
+);
+In this example, InstructorID in the Courses table is a foreign key that references the InstructorID column in the Instructors table. This establishes a relationship where each course must have a valid instructor ID that exists in the Instructors table.
+
+It's important to note that the referenced column(s) in the parent table must
+have a unique constraint (either a primary key constraint or a unique constraint) 
+for them to be used as the target of a foreign key constraint. 
+Additionally, foreign keys can be used to implement different types of relationships,
+such as one-to-many and many-to-many relationships, in a relational database model.
 
 
 
